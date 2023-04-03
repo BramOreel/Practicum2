@@ -1,4 +1,5 @@
-import be.kuleuven.cs.som.annotate.*;
+import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Immutable;
 
 /**
  * A class for signaling illegal attempts to change a file.
@@ -16,7 +17,7 @@ public class LoopedDirectoryException extends RuntimeException {
     /**
      * Variable referencing the file to which change was denied.
      */
-    private final Map map;
+    private final Directory map;
 
     /**
      * Initialize this new file not writable exception involving the
@@ -28,7 +29,7 @@ public class LoopedDirectoryException extends RuntimeException {
      * 			is set to the given file.
      * 			| new.getFile() == file
      */
-    public LoopedDirectoryException(Map map) {
+    public LoopedDirectoryException(Directory map) {
         this.map = map;
     }
 
@@ -36,7 +37,7 @@ public class LoopedDirectoryException extends RuntimeException {
      * Return the file involved in this file not writable exception.
      */
     @Basic @Immutable
-    public Map getMap() {
+    public Directory getMap() {
         return map;
     }
 

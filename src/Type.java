@@ -6,7 +6,7 @@ import be.kuleuven.cs.som.annotate.Model;
  * @author bramo
  * @version 1.0
  */
-public enum Type{
+public enum Type {
     JAVA(".java"),TXT(".txt"),PDF(".pdf");
 
     private final String extension;

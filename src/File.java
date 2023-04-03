@@ -1,6 +1,8 @@
+import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Immutable;
+import be.kuleuven.cs.som.annotate.Model;
+import be.kuleuven.cs.som.annotate.Raw;
 
-
-import be.kuleuven.cs.som.annotate.*;
 import java.util.Date;
 
 
@@ -29,7 +31,7 @@ import java.util.Date;
  *
  * @note		See Coding Rule 48 for more info on the encapsulation of class invariants.
  */
-public class File extends Naming{
+public class File extends Thing{
 
     /**********************************************************
      * Constructors
@@ -68,7 +70,7 @@ public class File extends Naming{
      * 			thus the object is in a raw state upon entry of the constructor.
      */
     @Raw
-    public File(Map dir,String name, int size, boolean writable, Type type) {
+    public File(Directory dir,String name, int size, boolean writable, Type type) {
         super(dir);
         setName(name);
         setSize(size);
@@ -88,7 +90,7 @@ public class File extends Naming{
      *         | this(name,0,true,type)
      */
     @Raw
-    public File(Map dir,String name, Type type) {
+    public File(Directory dir,String name, Type type) {
         this(dir,name,0,true, type);
     }
 
@@ -104,7 +106,7 @@ public class File extends Naming{
     /**
      * Variable referencing the directory of the file
      */
-    private Map directory = new Map("dir");
+    private Directory directory = new Directory("dir");
 
 
     /*
@@ -431,4 +433,42 @@ public class File extends Naming{
         this.isWritable = isWritable;
     }
 
+    /**
+     * moves the file to the designated location if the location is effective and the location is different from the current location. Otherwise nothing will happen
+     *
+     * @param location
+     *         the location of the directory
+     * @effect the directory is changed to the listed directory
+     *         |setDirectory(this)
+     * @effect the File is removed from the contents of the old directory
+     *         |this.remove();
+     * @effect the File is added to the list of content of the designated location
+     *         |location.add(this)
+     *
+     * @throws IllegalArgumentException
+     *         this is thrown when the location is the current location or the location does not exist
+     *         |!isValidLocation(location)
+     * @throws NameNotAvailableException
+     *         this is thrown when there already exists a File,Map or Link with the given name
+     *         |(!nameNotInMap(location)
+     */
+    @Raw
+    public void move(Directory location) throws IllegalArgumentException,NameNotAvailableException{
+        if(!isValidLocation(location))
+            throw new IllegalArgumentException();
+        if(!nameNotInMap(location))
+            throw new NameNotAvailableException();
+
+        remove();
+        setDirectory(location);
+        location.add(this);
+
+    }
+
+    public boolean isValidLocation(Directory location){
+        return((location != this.getDirectory()) && (location != null));
+    }
+
+
 }
+

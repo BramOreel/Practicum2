@@ -6,10 +6,11 @@ import be.kuleuven.cs.som.annotate.Raw;
  *  @invar	Each class or subclass must have a properly spelled name.
  * 			| isValidName(getName())
  *
+ *
  * @author bramo
  *
  */
-public abstract class Naming {
+public abstract class Thing {
 
     /**
      * A parameter describing the name of an object
@@ -19,22 +20,44 @@ public abstract class Naming {
     /**
      * A parameter stating the directory of an object. The standard directory will always be "dir"
      */
-    private Map directory = null;
-
-    private Map dir = new Map("dir");
-
+    private Directory directory = null;
 
     /**
-     * CONSTRUCTOR
+     * CONSTRUCTORS
+     *
+     * Initialise a new thing with given Directory
+     *
+     * @param mydirectory
+     *        a parameter describing the address of the directory one level higher then the thing
+     *
+     * @effect the directory of the thing is set to the given directory
+     *          |setDirectory(mydirectory)
+     * @effect the thing is added to the Arraylist of items that the directory contains
+     *          |myDirectory.add(this)
+     *
+     * @throws DirAlreadyContainsThingException
+     *         the program will throw an error if the
+     *         item already exists within the given directory.
+     *         |if mydirectory.contains.this throw error.
      */
-    public Naming(Map directory) throws IllegalArgumentException{
-        if(directory.getName() != "dir")
-            throw new IllegalArgumentException();
-        setDirectory(directory);
+    public Thing(Directory mydirectory) throws DirAlreadyContainsThingException{
+        if(mydirectory.getContent().contains(this))
+            throw new DirAlreadyContainsThingException();
+        setDirectory(mydirectory);
+        mydirectory.add(this);
     }
-    public Naming(){
+
+    /**
+     * Initialise a new root Directory
+     *
+     * @effect the directory will be set to 'null'
+     *         |Thing(null)
+     */
+
+    public Thing(){
         setDirectory(null);
     }
+
 
     /**
      * Return the name of this file.
@@ -109,19 +132,51 @@ public abstract class Naming {
 
         if (isValidName(name)){
             setName(name);
-            }
-    }
-
-    public void setDirectory(Map directory) throws DirAlreadyContainsThingException{
-        if(directory.getContent().contains(this))
-            throw new DirAlreadyContainsThingException();
-        this.directory = directory;
-        directory.AddContent(this);
-    }
-
-    public Map getDirectory(){
-        return this.directory;
+        }
     }
 
 
+    /**
+     *  Sets the directory of the thing to the giving directory
+     *
+     * @param mydirectory
+     *        a parameter stating the directory in which we want to place the thing
+     *
+     */
+    public void setDirectory(Directory mydirectory) {
+        this.directory = mydirectory;
+    }
+
+    /**
+     *
+     * @return returns the current directory
+     */
+    public Directory getDirectory(){
+        return directory;
+    }
+
+    /**
+     *
+     */
+    protected void remove(){
+        Directory currentdir = getDirectory();
+        if(currentdir != null){
+            currentdir.getContent().remove(this);
+        }
+    }
+    /**
+     * Checks if the name of a map already contains a File, Link or Map with the same name
+     * @param location
+     *        the map that is investigated
+     * @return returns true if the name is still available
+     */
+    @Model
+    protected boolean nameNotInMap(Directory location){
+        for(int i =0; i<location.getContent().size(); i++){
+            Thing item = location.getContent().get(i);
+            if(item.getName() == getName())
+                return false;
+        }
+        return true;
+    }
 }
