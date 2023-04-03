@@ -109,7 +109,7 @@ public class Map extends Naming{
     }
 
 
-    public int getSize() {
+    public int getNbItems() {
         return content.size();
     }
 
