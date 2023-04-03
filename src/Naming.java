@@ -17,6 +17,26 @@ public abstract class Naming {
     private String name;
 
     /**
+     * A parameter stating the directory of an object. The standard directory will always be "dir"
+     */
+    private Map directory = null;
+
+    private Map dir = new Map("dir");
+
+
+    /**
+     * CONSTRUCTOR
+     */
+    public Naming(Map directory) throws IllegalArgumentException{
+        if(directory.getName() != "dir")
+            throw new IllegalArgumentException();
+        setDirectory(directory);
+    }
+    public Naming(){
+        setDirectory(null);
+    }
+
+    /**
      * Return the name of this file.
      * @note		See Coding Rule 19 for the Basic annotation.
      */
@@ -90,6 +110,17 @@ public abstract class Naming {
         if (isValidName(name)){
             setName(name);
             }
+    }
+
+    public void setDirectory(Map directory) throws DirAlreadyContainsThingException{
+        if(directory.getContent().contains(this))
+            throw new DirAlreadyContainsThingException();
+        this.directory = directory;
+        directory.AddContent(this);
+    }
+
+    public Map getDirectory(){
+        return this.directory;
     }
 
 

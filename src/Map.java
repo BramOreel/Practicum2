@@ -27,11 +27,8 @@ public class Map extends Naming{
     private ArrayList<Naming> content = new ArrayList<Naming>();
 
     /**
-     * Variable stating the map one level higher than the current map. If the map is a root directory, the variable will state 'null'
-     */
-    private Map directory = null;
 
-    /**
+     /**
      *  CONSTRUCTOR
      *
      *
@@ -41,13 +38,17 @@ public class Map extends Naming{
      *        the name of the map
      */
     @Raw
-    public Map(String name){
+    public Map(Map dir,String name){
+        super(dir);
         setName(name);
 
-
-
-
     }
+
+    public Map(String name){
+        super();
+        setName(name);
+    }
+
     /**
      * Check whether the given name is a legal name for a file.
      *
@@ -66,14 +67,21 @@ public class Map extends Naming{
 
 
 
-    public void AddContent(Map map) throws LoopedDirectoryException, IllegalArgumentException{
+    public void AddContent(Naming thing) throws LoopedDirectoryException, IllegalArgumentException{
+        if(thing instanceof Map){
+            if(thing.getName() == "dir")
+                content.add(thing);
+            if(!noLoops((Map) thing))
+                throw new LoopedDirectoryException((Map) thing);
+            if( thing == this)
+                throw new IllegalArgumentException();
+            content.add(thing);
+            ((Map)thing).setDirectory(this);
+        } else if (thing instanceof File) {
 
-        if(!noLoops(map))
-            throw new LoopedDirectoryException(map);
-        if(map == this)
-            throw new IllegalArgumentException();
-        content.add(map);
-        map.setDirectory(this);
+
+        }
+
     }
 
     private boolean noLoops(Map addMap){
@@ -92,6 +100,13 @@ public class Map extends Naming{
     }
     //je moet gwn checken of de wortelroots van 2 items wel of niet overeenkomen
 
+    public void removeContent(Naming thing)throws ClassNotFoundException{
+        if(!content.contains(thing))
+            throw new ClassNotFoundException();
+        content.remove(thing);
+
+
+    }
 
 
     public int getSize() {
@@ -102,13 +117,7 @@ public class Map extends Naming{
         return content;
     }
 
-    public void setDirectory(Map directory) {
-        this.directory = directory;
-    }
 
-    public Map getDirectory(){
-        return this.directory;
-    }
 
 
 }

@@ -19,10 +19,13 @@ import java.util.Date;
  *          | isValidCreationTime(getCreationTime())
  * @invar   Each file must have a valid modification time.
  *          | canHaveAsModificationTime(getModificationTime())
+ * @invar   Each file must be contained within a directory. A file can't be a root directory
+ *          | getdirectory() != null
  *
  * @author  Mark Dreesen
  * @author  Tommy Messelis
- * @version 3.3
+ * @author bramo
+ * @version 4.0
  *
  * @note		See Coding Rule 48 for more info on the encapsulation of class invariants.
  */
@@ -65,7 +68,8 @@ public class File extends Naming{
      * 			thus the object is in a raw state upon entry of the constructor.
      */
     @Raw
-    public File(String name, int size, boolean writable, Type type) {
+    public File(Map dir,String name, int size, boolean writable, Type type) {
+        super(dir);
         setName(name);
         setSize(size);
         setWritable(writable);
@@ -84,8 +88,8 @@ public class File extends Naming{
      *         | this(name,0,true,type)
      */
     @Raw
-    public File(String name, Type type) {
-        this(name,0,true, type);
+    public File(Map dir,String name, Type type) {
+        this(dir,name,0,true, type);
     }
 
     /**
@@ -96,6 +100,21 @@ public class File extends Naming{
     public String getType() {
         return type.getExtension();
     }
+
+    /**
+     * Variable referencing the directory of the file
+     */
+    private Map directory = new Map("dir");
+
+
+    /*
+    public void moveTo(Map map){
+        Map oldmap = getDirectory();
+        oldmap.
+        map.AddContent(this);
+        setDirectory(map);
+    }
+*/
 
     /**********************************************************
      * name - total programming
