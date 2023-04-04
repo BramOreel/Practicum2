@@ -188,7 +188,7 @@ public class Directory extends Thing {
      * Sorts the arraylist alphabetically based on the name of the items.
      * @param items
      *        The arraylist that gets sorted.
-     *
+     * @post  The arraylist is sorted alphabetically.
      */
 
     private void sortMap(ArrayList<Thing> items){
@@ -199,7 +199,18 @@ public class Directory extends Thing {
                         Collections.swap(items, i, j);
     }}}}}
 
+    /**
+     * Gives the number of items and maps in the map.
+     */
     public int getNbItems(){
+        return content.size();
+    }
+
+    /**
+     * Gives the total number of items in the map and in the submaps in the map.
+     * @return the total amount.
+     */
+    public int getTotalNbItems(){
 
         int j = 0;
         for(int i=0; i<getContent().size();i++){
