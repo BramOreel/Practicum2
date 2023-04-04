@@ -37,8 +37,8 @@ public class Main {
         System.out.println(mapd.getContent());
 
         System.out.println(mapa.getNbItems());
-        System.out.println(mapa.getRootName());
-        System.out.println(mapa);
+        System.out.println(mapd.getRootName());
+        System.out.println(mapa.isDirectOrIndirectChildOf(mapf));
     }
 
 

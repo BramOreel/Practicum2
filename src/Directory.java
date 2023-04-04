@@ -346,5 +346,27 @@ public class Directory extends Thing {
         this.isWriteable = newWrite;
     }
 
+    /**
+     * Checks if a map is a child of another map
+     *
+     * @param map
+     *        the parent map we want to check it's children of
+     *
+     * @return returns true if the parent directory has this as one of it's children.
+     */
+    public boolean isDirectOrIndirectChildOf(Directory map){
+        if(this.getDirectory() == map)
+            return true;
+        else if (this.getDirectory() == null)
+            return false;
+
+        Directory nextDir = this.getDirectory();
+        return nextDir.isDirectOrIndirectChildOf(map);
+    }
+
+    public int getTotalDiskUsage(){
+
+    }
+
 
 }
