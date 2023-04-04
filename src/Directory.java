@@ -1,3 +1,4 @@
+import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Model;
 import be.kuleuven.cs.som.annotate.Raw;
 
@@ -26,7 +27,7 @@ public class Directory extends Thing {
     /**
      * Variable stating if the users is allowed to change the name of the map or add or remove items from it
      */
-    private boolean writeable = true;
+    private boolean isWriteable = true;
 
     /**
      * Variable which contains the content of the map
@@ -39,20 +40,21 @@ public class Directory extends Thing {
 
 
 
-    public Directory(Directory dir, String name, boolean writeable){
+    public Directory(Directory dir, String name, boolean isWriteable){
         super(dir);
         setName(name);
-        //setWriteable(writeable);
+        setWritable(isWriteable);
+        getDirectory().sortMap();
     }
 
     public Directory(Directory dir, String name){
         this(dir,name,true);
     }
 
-    public Directory(String name, boolean writeable){
+    public Directory(String name, boolean isWriteable){
         super();
         setName(name);
-        //setWriteable(writeable);
+        setWritable(isWriteable);
     }
 
     public Directory(String name){
@@ -77,14 +79,38 @@ public class Directory extends Thing {
     }
 
     /**
-     * adds a File, Map or Link to the directory's content
+     * changes the name of the Directory if writeable
+     *
+     * @param name The new name for this file.
+     *
+     * @throws FileNotWritableException is thrown when isWriteable = false
+     *         |(!isWritable)
+     */
+    @Override
+    public void changeName(String name) throws FileNotWritableException{
+        if(!isWritable())
+            throw new FileNotWritableException(this);
+        super.changeName(name);
+    }
+
+
+
+    /**
+     * adds a File, Map or Link to the directory's content if the thing isn't a null reference
      * @param thing
      *        the thing to be added
+     * @throws IllegalArgumentException is thrown when the thing to be added is a null reference.
+     *         |(thing == null)
+     * @throws FileNotWritableException is thrown when the users tries to add a map, link or file to a directory that is not writable
+     *         |(!isWritable)
      */
-    @Model
-    protected void add(Thing thing){
+    @Model @Raw
+    protected void add(Thing thing) throws IllegalArgumentException,FileNotWritableException{
+        if(thing == null)
+            throw new IllegalArgumentException();
+        if(!isWritable())
+            throw new FileNotWritableException(this);
         content.add(thing);
-        sortMap();
     }
 
     /**
@@ -133,6 +159,8 @@ public class Directory extends Thing {
      *         |oldDir.remove(this)
      * @effect the map is added to the content of the location
      *         |newDir.add(this)
+     * @effect after the thing is added, the map is sorted by name
+     *         |sortMap();
      * @throws LoopedDirectoryException is thrown when a map already exists within the destination, thus creating a loop
      *         is also thrown when the new directory is the current directory
      *         |(!noLoops(location)
@@ -142,7 +170,7 @@ public class Directory extends Thing {
      *         this is thrown when there already exists a File,Map or Link with the given name
      *         |(!nameNotInMap(location))
      */
-
+    @Raw
     public void move(Directory location) throws LoopedDirectoryException,IllegalArgumentException,NameNotAvailableException{
         if(!noLoops(location))
             throw new LoopedDirectoryException(location);
@@ -153,6 +181,7 @@ public class Directory extends Thing {
         remove();
         location.add(this);
         setDirectory(location);
+        location.sortMap();
 
     }
 
@@ -289,5 +318,33 @@ public class Directory extends Thing {
         }
         return j;
     }
+
+    /**
+     * WRITEABLE
+     */
+
+
+    /**
+     * Check whether this map is writable.
+     */
+    @Raw @Basic
+    public boolean isWritable() {
+        return isWriteable;
+    }
+
+    /**
+     * Set the writability of this map to the given writability.
+     *
+     * @param newWrite
+     *        The new writability
+     * @post  The given writability is registered as the new writability
+     *        for this map.
+     *        | new.isWritable() == isWritable
+     */
+    @Raw
+    public void setWritable(boolean newWrite) {
+        this.isWriteable = newWrite;
+    }
+
 
 }

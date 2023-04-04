@@ -76,6 +76,7 @@ public class File extends Thing{
         setSize(size);
         setWritable(writable);
         this.type = type;
+        getDirectory().sortMap();
     }
 
     /**
@@ -144,6 +145,8 @@ public class File extends Thing{
      * of this file is updated.
      * | if (isValidName(name) && isWritable())
      * | then setModificationTime()
+     * @effect after the filename is changed, the files directory is sorted by name
+     *         |getDirectory.sortMap();
      */
     @Override
     public void changeName(String name) throws FileNotWritableException {
@@ -444,6 +447,8 @@ public class File extends Thing{
      *         |this.remove();
      * @effect the File is added to the list of content of the designated location
      *         |location.add(this)
+     * @effect after the thing is added, the map is sorted by name
+     *        |sortMap();
      *
      * @throws IllegalArgumentException
      *         this is thrown when the location is the current location or the location does not exist
@@ -462,9 +467,16 @@ public class File extends Thing{
         remove();
         setDirectory(location);
         location.add(this);
-
+        location.sortMap();
     }
 
+    /**
+     * checks if the location is not the current location or a null reference
+     *
+     * @param location
+     *        the location to send the file to
+     * @return returns true if valid location
+     */
     public boolean isValidLocation(Directory location){
         return((location != this.getDirectory()) && (location != null));
     }

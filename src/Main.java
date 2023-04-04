@@ -7,7 +7,7 @@ public class Main {
         Directory map1 = new Directory(dir,"map");
         System.out.println(map1.getDirectory());
 
-        File biem = new File(dir,"mauw",Type.PDF);
+        File biem = new File(dir,"miauw",Type.PDF);
         System.out.println(biem.getDirectory());
         System.out.println(dir.getContent());
         File bong = new File(dir,"mauw",Type.PDF);
@@ -37,7 +37,8 @@ public class Main {
         System.out.println(mapd.getContent());
 
         System.out.println(mapa.getNbItems());
-
+        System.out.println(mapa.getRootName());
+        System.out.println(mapa);
     }
 
 

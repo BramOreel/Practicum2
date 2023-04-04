@@ -126,6 +126,8 @@ public abstract class Thing {
      * if this is a valid name otherwise there is no change.
      * | if (isValidName(name)
      * | then setName(name)
+      @effect after the name is changed, the object map is sorted by name
+     *        |getDirectory.sortMap();
      */
     public void changeName(String name) {
 
@@ -179,5 +181,28 @@ public abstract class Thing {
                 return false;
         }
         return true;
+    }
+
+    /**
+     *returns the root Directory of a thing. Returns itself when the directory is a root Directory
+     * @return
+     */
+    @Basic
+    public Directory getRoot(){
+        Directory nextdir = getDirectory();
+        if(nextdir == null)
+            return (Directory) this;
+        else
+            return nextdir.getRoot();
+
+    }
+
+    /**
+     *
+     * @return returns the name a files root directory
+     *         |getRoot().getName();
+     */
+    public String getRootName(){
+        return getRoot().getName();
     }
 }
