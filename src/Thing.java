@@ -1,6 +1,9 @@
 import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Model;
 import be.kuleuven.cs.som.annotate.Raw;
+
+import java.util.Date;
 
 /**
  *  @invar	Each class or subclass must have a properly spelled name.
@@ -152,6 +155,7 @@ public abstract class Thing {
 
         if (isValidName(name)){
             setName(name);
+            setModificationTime();
             if(getDirectory() != null){
                 getDirectory().sortMap();
         }
@@ -254,7 +258,126 @@ public abstract class Thing {
         return((location != this.getDirectory()) && (location != null));
     }
 
+    /**********************************************************
+     * creationTime
+     **********************************************************/
 
+    /**
+     * Variable referencing the time of creation.
+     */
+    private final Date creationTime = new Date();
+
+    /**
+     * Return the time at which this file was created.
+     */
+    @Raw @Basic @Immutable
+    public Date getCreationTime() {
+        return creationTime;
+    }
+
+    /**
+     * Check whether the given date is a valid creation time.
+     *
+     * @param  	date
+     *         	The date to check.
+     * @return 	True if and only if the given date is effective and not
+     * 			in the future.
+     *         	| result ==
+     *         	| 	(date != null) &&
+     *         	| 	(date.getTime() <= System.currentTimeMillis())
+     */
+    public static boolean isValidCreationTime(Date date) {
+        return 	(date!=null) &&
+                (date.getTime()<=System.currentTimeMillis());
+    }
+
+    /**********************************************************
+     * modificationTime
+     **********************************************************/
+
+    /**
+     * Variable referencing the time of the last modification,
+     * possibly null.
+     */
+    private Date modificationTime = null;
+
+    /**
+     * Return the time at which this thing was last modified, that is
+     * at which the name or size was last changed. If this thing has
+     * not yet been modified after construction, null is returned.
+     */
+    @Raw @Basic
+    public Date getModificationTime() {
+        return modificationTime;
+    }
+
+    /**
+     * Check whether this file can have the given date as modification time.
+     *
+     * @param	date
+     * 			The date to check.
+     * @return 	True if and only if the given date is either not effective
+     * 			or if the given date lies between the creation time and the
+     * 			current time.
+     *         | result == (date == null) ||
+     *         | ( (date.getTime() >= getCreationTime().getTime()) &&
+     *         |   (date.getTime() <= System.currentTimeMillis())     )
+     */
+    @Raw
+    public boolean canHaveAsModificationTime(Date date) {
+        return (date == null) ||
+                ( (date.getTime() >= getCreationTime().getTime()) &&
+                        (date.getTime() <= System.currentTimeMillis()) );
+    }
+
+    /**
+     * Set the modification time of this thing to the current time.
+     *
+     * @post   The new modification time is effective.
+     *         | new.getModificationTime() != null
+     * @post   The new modification time lies between the system
+     *         time at the beginning of this method execution and
+     *         the system time at the end of method execution.
+     *         | (new.getModificationTime().getTime() >=
+     *         |                    System.currentTimeMillis()) &&
+     *         | (new.getModificationTime().getTime() <=
+     *         |                    (new System).currentTimeMillis())
+     */
+    @Model
+    protected void setModificationTime() {
+        modificationTime = new Date();
+    }
+
+    /**
+     * Return whether this file, directory or link and the given other file, directory or link have an
+     * overlapping use period.
+     *
+     * @param 	other
+     *        	The other file, directory or link to compare with.
+     * @return 	False if the other thing is not effective
+     * 			False if the prime object does not have a modification time
+     * 			False if the other thing is effective, but does not have a modification time
+     * 			otherwise, true if and only if the open time intervals of this thing and
+     * 			the other thing overlap
+     *        	| if (other == null) then result == false else
+     *        	| if ((getModificationTime() == null)||
+     *        	|       other.getModificationTime() == null)
+     *        	|    then result == false
+     *        	|    else
+     *        	| result ==
+     *        	| ! (getCreationTime().before(other.getCreationTime()) &&
+     *        	|	 getModificationTime().before(other.getCreationTime()) ) &&
+     *        	| ! (other.getCreationTime().before(getCreationTime()) &&
+     *        	|	 other.getModificationTime().before(getCreationTime()) )
+     */
+    public boolean hasOverlappingUsePeriod(Thing other) {
+        if (other == null) return false;
+        if(getModificationTime() == null || other.getModificationTime() == null) return false;
+        return ! (getCreationTime().before(other.getCreationTime()) &&
+                getModificationTime().before(other.getCreationTime()) ) &&
+                ! (other.getCreationTime().before(getCreationTime()) &&
+                        other.getModificationTime().before(getCreationTime()) );
+    }
 
 
 

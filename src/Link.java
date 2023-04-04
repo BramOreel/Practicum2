@@ -92,6 +92,8 @@ public class Link extends Thing{
      *         |location.add(this)
      * @effect after the thing is added, the map is sorted by name
      *        |sortMap();
+     * @effect the modification time of the location is changed to the current time
+     *        |setModificationTime();
      *
      * @throws IllegalArgumentException
      *         this is thrown when the location is the current location or the location does not exist
@@ -111,6 +113,7 @@ public class Link extends Thing{
         setDirectory(location);
         location.add(this);
         location.sortMap();
+        location.setModificationTime();
     }
 
 
