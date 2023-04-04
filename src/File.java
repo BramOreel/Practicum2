@@ -481,6 +481,16 @@ public class File extends Thing{
         return((location != this.getDirectory()) && (location != null));
     }
 
+    /**
+     *
+     * @return returns the directory path of a file divided by forward slashes. The file type is specified at the end of the path.
+     */
+    @Override
+    public String getAbsolutePath(){
+        return( super.getAbsolutePath() + type.getExtension());
+    }
+
+
 
 }
 

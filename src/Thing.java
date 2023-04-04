@@ -205,4 +205,21 @@ public abstract class Thing {
     public String getRootName(){
         return getRoot().getName();
     }
+
+    /**
+     *
+     * @return returns the directory path  of a Link or Map, divided by forward slashes
+     *
+     */
+    public String getAbsolutePath(){
+        String path = "/" + getName();
+        Directory nextDir = getDirectory();
+        while (nextDir != null){
+            path = "/" + nextDir.getName() + path;
+            nextDir = nextDir.getDirectory();
+        }
+        return path;
+    }
+
+
 }

@@ -44,6 +44,7 @@ public class Main {
         System.out.println(mapd.getRootName());
         System.out.println(mapa.isDirectOrIndirectChildOf(mapf));
         System.out.println(mapa.getTotalDiskUsage());
+        System.out.println(biem.getAbsolutePath());
     }
 
 
