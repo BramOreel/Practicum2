@@ -1,5 +1,7 @@
 import be.kuleuven.cs.som.annotate.Model;
 import be.kuleuven.cs.som.annotate.Raw;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import java.util.ArrayList;
 
@@ -182,11 +184,20 @@ public class Directory extends Thing {
              return noLoops(nextDir);
         }
     }
+    /**
+     * Sorts the arraylist alphabetically based on the name of the items.
+     * @param items
+     *        The arraylist that gets sorted.
+     *
+     */
 
-    private void sortMap(){
-        int mapSize = getContent().size();
-    }
-
+    private void sortMap(ArrayList<Thing> items){
+        if(items.size() > 0){
+            for (int i = 0; i < items.size() - 1; i++) {
+                for (int j = i + 1; j < items.size(); j++) {
+                    if (items.get(i).getName().compareTo(items.get(j).getName()) > 0) {
+                        Collections.swap(items, i, j);
+    }}}}}
 
     public int getNbItems(){
 
