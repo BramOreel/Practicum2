@@ -85,6 +85,7 @@ public class Directory extends Thing {
     @Model
     protected void add(Thing thing){
         content.add(thing);
+        sortMap();
     }
 
     /**
@@ -186,12 +187,11 @@ public class Directory extends Thing {
     }
     /**
      * Sorts the arraylist alphabetically based on the name of the items.
-     * @param items
-     *        The arraylist that gets sorted.
      * @post  The arraylist is sorted alphabetically.
      */
 
-    private void sortMap(ArrayList<Thing> items){
+    protected void sortMap(){
+        ArrayList<Thing> items = getContent();
         if(items.size() > 0){
             for (int i = 0; i < items.size() - 1; i++) {
                 for (int j = i + 1; j < items.size(); j++) {
@@ -203,10 +203,10 @@ public class Directory extends Thing {
      * Gives the number of items and maps in the map.
      */
     public int getNbItems(){
-        return content.size();
+        return getContent().size();
     }
 
-    /**
+    /**d
      * Gives the total number of items in the map and in the submaps in the map.
      * @return the total amount.
      */

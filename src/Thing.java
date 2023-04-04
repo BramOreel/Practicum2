@@ -120,20 +120,21 @@ public abstract class Thing {
     /**
      * Change the name of this file to the given name.
      *
-     * @param	name
-     * 			The new name for this file.
-     * @effect  The name of this file is set to the given name,
-     * 			if this is a valid name otherwise there is no change.
-     * 			| if (isValidName(name)
-     *          | then setName(name)
-     *
+     * @return
+     * @param    name The new name for this file.
+     * @effect The name of this file is set to the given name,
+     * if this is a valid name otherwise there is no change.
+     * | if (isValidName(name)
+     * | then setName(name)
      */
     public void changeName(String name) {
 
         if (isValidName(name)){
             setName(name);
+            if(getDirectory() != null){
+                getDirectory().sortMap();
         }
-    }
+    }}
 
 
     /**
@@ -152,7 +153,7 @@ public abstract class Thing {
      * @return returns the current directory
      */
     public Directory getDirectory(){
-        return directory;
+        return this.directory;
     }
 
     /**

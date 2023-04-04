@@ -131,20 +131,19 @@ public class File extends Thing{
     /**
      * Change the name of this file to the given name.
      *
-     * @param	name
-     * 			The new name for this file.
-     * @effect  The name of this file is set to the given name,
-     * 			if this is a valid name and the file is writable,
-     * 			otherwise there is no change.
-     * 			| if (isValidName(name) && isWritable())
-     *          | then setName(name)
-     * @effect  If the name is valid and the file is writable, the modification time
-     * 			of this file is updated.
-     *          | if (isValidName(name) && isWritable())
-     *          | then setModificationTime()
-     * @throws  FileNotWritableException(this)
-     *          This file is not writable
-     *          | ! isWritable()
+     * @return
+     * @throws FileNotWritableException(this) This file is not writable
+     *                                        | ! isWritable()
+     * @param    name The new name for this file.
+     * @effect The name of this file is set to the given name,
+     * if this is a valid name and the file is writable,
+     * otherwise there is no change.
+     * | if (isValidName(name) && isWritable())
+     * | then setName(name)
+     * @effect If the name is valid and the file is writable, the modification time
+     * of this file is updated.
+     * | if (isValidName(name) && isWritable())
+     * | then setModificationTime()
      */
     @Override
     public void changeName(String name) throws FileNotWritableException {
@@ -152,6 +151,7 @@ public class File extends Thing{
             if (isValidName(name)){
                 setName(name);
                 setModificationTime();
+                getDirectory().sortMap();
             }
         } else {
             throw new FileNotWritableException(this);
