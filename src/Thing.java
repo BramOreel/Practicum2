@@ -15,7 +15,7 @@ public abstract class Thing {
     /**
      * A parameter describing the name of an object
      */
-    private String name;
+    private String name = getDefaultName();
 
     /**
      * A parameter stating the directory of an object. The standard directory will always be "dir"
