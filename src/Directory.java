@@ -1,8 +1,7 @@
 import be.kuleuven.cs.som.annotate.Model;
 import be.kuleuven.cs.som.annotate.Raw;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+
+import java.util.*;
 import java.util.ArrayList;
 
 /**
@@ -202,7 +201,8 @@ public class Directory extends Thing {
     /**
      * Returns the item or submap at a given index.
      * @param index
-     *        the index of the item you want, starting from 1 with the first number.
+     *        the index of the item you want, starting from 1 with the first item.
+     * @pre   The index must be in the range of the content of the directory.
      * @return The item at the index.
      */
     public Thing getItemAt(int index){
@@ -230,6 +230,40 @@ public class Directory extends Thing {
             return null;
         }
         return getItemAt(index - 1);
+    }
+
+    /**
+     * Checks if the directory conatains an item with a given name, ignoring the difference between
+     * lower and upper case letters.
+     * @param searchName
+     *        The given name.
+     * @return true if contains the item, false if it does not.
+     */
+
+    public boolean containsDiskItemWithName(String searchName){
+        int index = Collections.binarySearch(getContent(), new Directory( searchName), new Comparator<Thing>() {
+            @Override
+            public int compare(Thing item1, Thing item2) {
+                return item1.getName().toLowerCase().compareTo(item2.getName().toLowerCase());
+            }
+        });
+        if (index < 0){
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Gives the index of the given item in the directory, the items are ordered starting
+     * with index 1.
+     * @pre   The item must be inside the directory.
+     * @param item
+     *        the given item.
+     * @return the index of the given item.
+     */
+
+    public int getIndexOf(Thing item){
+        return getContent().indexOf(item) + 1;
     }
 
     /**
