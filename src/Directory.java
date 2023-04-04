@@ -79,6 +79,32 @@ public class Directory extends Thing {
         return( name != null && name.matches("[a-zA-Z_0-9-]+"));
     }
 
+
+    /**
+     * Terminate the item.
+     * @post  The item will be removed from its directory.
+     *       | setDirectory(null)
+     *       | remove()
+     * @post  The terminated state will be set to true.
+     *       | this.isTerminated = true
+     * @throws FileNotWritableException
+     *        if the directory is not writable, this exception will be thrown.
+     * @throws DirectoryNotEmptyException
+     *        If the directory is not empty, this exception will be thrown.
+     */
+    @Override
+    public void terminate() throws FileNotWritableException, DirectoryNotEmptyException{
+        if(! isWriteable){
+            throw new FileNotWritableException();
+        }
+        if(getNbItems() != 0){
+            throw new DirectoryNotEmptyException();
+        }
+        else{ this.isTerminated = true;
+            remove();
+            setDirectory(null);
+    }}
+
     /**
      * changes the name of the Directory if writeable
      *

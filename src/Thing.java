@@ -15,12 +15,16 @@ public abstract class Thing {
     /**
      * A parameter describing the name of an object
      */
-    private String name = getDefaultName();
+    protected String name = getDefaultName();
+    /**
+     * A parameter describing if the item still exists.
+     */
+    protected boolean isTerminated = false;
 
     /**
      * A parameter stating the directory of an object. The standard directory will always be "dir"
      */
-    private Directory directory = null;
+    protected Directory directory = null;
 
     /**
      * CONSTRUCTORS
@@ -55,6 +59,21 @@ public abstract class Thing {
      */
 
     public Thing(){
+        setDirectory(null);
+    }
+
+    /**
+     * Terminate the item.
+     * @post  The item will be removed from its directory.
+     *       | setDirectory(null)
+     *       | remove()
+     * @post  The terminated state will be set to true.
+     *       | this.isTerminated = true
+     */
+
+    public void terminate(){
+        this.isTerminated = true;
+        remove();
         setDirectory(null);
     }
 
@@ -165,6 +184,7 @@ public abstract class Thing {
         Directory currentdir = getDirectory();
         if(currentdir != null){
             currentdir.getContent().remove(this);
+            setDirectory(null);
         }
     }
     /**

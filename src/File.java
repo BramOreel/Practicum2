@@ -110,6 +110,28 @@ public class File extends Thing{
     private Directory directory = new Directory("dir");
 
 
+
+    /**
+     * Terminate the item.
+     * @post  The item will be removed from its directory.
+     *       | setDirectory(null)
+     *       | remove()
+     * @post  The terminated state will be set to true.
+     *       | this.isTerminated = true
+     * @throws FileNotWritableException
+     *        if the file is not writable, this exception will be thrown.
+     */
+    @Override
+    public void terminate() throws FileNotWritableException, DirectoryNotEmptyException{
+        if(! isWritable){
+            throw new FileNotWritableException(this);
+        }
+        else{ this.isTerminated = true;
+            remove();
+            setDirectory(null);
+        }}
+
+
     /*
     public void moveTo(Map map){
         Map oldmap = getDirectory();
