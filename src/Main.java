@@ -14,6 +14,8 @@ public class Main {
         System.out.println(dir.getContent());
         map1.makeRoot();
         System.out.println(dir.getContent());
+        File arlen = new File(dir,"Arlen",200,true,Type.PDF);
+        File bram = new File(dir,"Bram",300,true,Type.PDF);
 
         Directory mapa = new Directory("a");
         Directory mapb = new Directory("b");
@@ -33,12 +35,15 @@ public class Main {
         mapf.move(mapc);
         bong.move(mapd);
         biem.move(mapd);
+        arlen.move(mapf);
+        bram.move(mapb);
 
         System.out.println(mapd.getContent());
 
         System.out.println(mapa.getNbItems());
         System.out.println(mapd.getRootName());
         System.out.println(mapa.isDirectOrIndirectChildOf(mapf));
+        System.out.println(mapa.getTotalDiskUsage());
     }
 
 

@@ -235,7 +235,7 @@ public class Directory extends Thing {
      * @return The item at the index.
      */
     public Thing getItemAt(int index){
-        return content.get(index+1);
+        return content.get(index-1);
     }
 
     /**
@@ -364,9 +364,26 @@ public class Directory extends Thing {
         return nextDir.isDirectOrIndirectChildOf(map);
     }
 
+    /**
+     *
+     * @return returns the total amount of bytes which a map occupies
+     */
     public int getTotalDiskUsage(){
-
+        int j = 0;
+        int nb = getNbItems();
+        for(int i = 0; i < nb; i++){
+            Thing currentItem = getItemAt(1+i);
+            if(currentItem instanceof Directory) {
+                j += ((Directory) currentItem).getTotalDiskUsage();
+            } else if (currentItem instanceof File) {
+                j+= ((File) currentItem).getSize();
+            }
+        }
+        return j;
     }
+
+
+
 
 
 }
