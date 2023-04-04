@@ -209,6 +209,15 @@ public class Directory extends Thing {
         return content.get(index+1);
     }
 
+    /**
+     * Returns an item in the directory that has the given name.
+     * @param searchName
+     *        The name of the item.
+     * @return The item with the given name. If there is no such item, null is returned.
+     *        | if "searchname" not in getContent(): return null
+     *        | else return getContent().getItemAt(index)
+     * @effect The getItemAt() function returns the item with the index.
+     */
 
     public Thing getItem(String searchName){
         int index = Collections.binarySearch(getContent(), new Directory( searchName), new Comparator<Thing>() {
