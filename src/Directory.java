@@ -2,7 +2,7 @@ import be.kuleuven.cs.som.annotate.Model;
 import be.kuleuven.cs.som.annotate.Raw;
 import java.util.ArrayList;
 import java.util.Collections;
-
+import java.util.Comparator;
 import java.util.ArrayList;
 
 /**
@@ -200,13 +200,37 @@ public class Directory extends Thing {
     }}}}}
 
     /**
+     * Returns the item or submap at a given index.
+     * @param index
+     *        the index of the item you want, starting from 1 with the first number.
+     * @return The item at the index.
+     */
+    public Thing getItemAt(int index){
+        return content.get(index+1);
+    }
+
+
+    public Thing getItem(String searchName){
+        int index = Collections.binarySearch(getContent(), new Directory( searchName), new Comparator<Thing>() {
+                    @Override
+                    public int compare(Thing item1, Thing item2) {
+                        return item1.getName().compareTo(item2.getName());
+                    }
+                });
+        if (index < 0){
+            return null;
+        }
+        return getItemAt(index - 1);
+    }
+
+    /**
      * Gives the number of items and maps in the map.
      */
     public int getNbItems(){
         return getContent().size();
     }
 
-    /**d
+    /**
      * Gives the total number of items in the map and in the submaps in the map.
      * @return the total amount.
      */
