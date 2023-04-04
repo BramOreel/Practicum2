@@ -64,11 +64,11 @@ public abstract class Thing {
 
     /**
      * Terminate the item.
-     * @post  The item will be removed from its directory.
-     *       | setDirectory(null)
-     *       | remove()
-     * @post  The terminated state will be set to true.
-     *       | this.isTerminated = true
+     * @effect  The item will be removed from its directory.
+     *          | setDirectory(null)
+     *          | remove()
+     * @effect  The terminated state will be set to true.
+     *          | this.isTerminated = true
      */
 
     public void terminate(){
@@ -165,7 +165,7 @@ public abstract class Thing {
      *        a parameter stating the directory in which we want to place the thing
      *
      */
-    public void setDirectory(Directory mydirectory) {
+    protected void setDirectory(Directory mydirectory) {
         this.directory = mydirectory;
     }
 
@@ -178,13 +178,15 @@ public abstract class Thing {
     }
 
     /**
-     *
+     * removes an item from a directory and sets it's own directory to null.
+     * @post after the item is removed, the items directory is sorted again
      */
     protected void remove(){
         Directory currentdir = getDirectory();
         if(currentdir != null){
             currentdir.getContent().remove(this);
             setDirectory(null);
+            currentdir.sortMap();
         }
     }
     /**
@@ -240,6 +242,23 @@ public abstract class Thing {
         }
         return path;
     }
+
+    /**
+     * checks if the location is not the current location or a null reference
+     *
+     * @param location
+     *        the location to send the file to
+     * @return returns true if valid location
+     */
+    protected boolean isValidLocation(Directory location){
+        return((location != this.getDirectory()) && (location != null));
+    }
+
+
+
+
+
+
 
 
 }

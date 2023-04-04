@@ -23,7 +23,7 @@ public class DirectoryNotEmptyException extends RuntimeException{
      * 			is set to the given directory.
      * 			| new.getDirectory() == directory
      */
-    public FileNotWritableException(Directory directory) {
+    public DirectoryNotEmptyException(Directory directory) {
         this.directory =  directory;
     }
 

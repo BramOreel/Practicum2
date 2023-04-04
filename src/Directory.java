@@ -81,8 +81,8 @@ public class Directory extends Thing {
 
 
     /**
-     * Terminate the item.
-     * @post  The item will be removed from its directory.
+     * Terminates the item.
+     * @post  The item will be removed from its directory and the directory of the map will be set to null.
      *       | setDirectory(null)
      *       | remove()
      * @post  The terminated state will be set to true.
@@ -95,14 +95,12 @@ public class Directory extends Thing {
     @Override
     public void terminate() throws FileNotWritableException, DirectoryNotEmptyException{
         if(! isWriteable){
-            throw new FileNotWritableException();
+            throw new FileNotWritableException(this);
         }
         if(getNbItems() != 0){
-            throw new DirectoryNotEmptyException();
+            throw new DirectoryNotEmptyException(this);
         }
-        else{ this.isTerminated = true;
-            remove();
-            setDirectory(null);
+        else{ super.terminate();
     }}
 
     /**

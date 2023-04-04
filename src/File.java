@@ -113,7 +113,7 @@ public class File extends Thing{
 
     /**
      * Terminate the item.
-     * @post  The item will be removed from its directory.
+     * @post  The item will be removed from its directory and the items directory will be set to null.
      *       | setDirectory(null)
      *       | remove()
      * @post  The terminated state will be set to true.
@@ -126,20 +126,9 @@ public class File extends Thing{
         if(! isWritable){
             throw new FileNotWritableException(this);
         }
-        else{ this.isTerminated = true;
-            remove();
-            setDirectory(null);
+        else{  super.terminate();
         }}
 
-
-    /*
-    public void moveTo(Map map){
-        Map oldmap = getDirectory();
-        oldmap.
-        map.AddContent(this);
-        setDirectory(map);
-    }
-*/
 
     /**********************************************************
      * name - total programming
@@ -492,16 +481,7 @@ public class File extends Thing{
         location.sortMap();
     }
 
-    /**
-     * checks if the location is not the current location or a null reference
-     *
-     * @param location
-     *        the location to send the file to
-     * @return returns true if valid location
-     */
-    public boolean isValidLocation(Directory location){
-        return((location != this.getDirectory()) && (location != null));
-    }
+
 
     /**
      *
