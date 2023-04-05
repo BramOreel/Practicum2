@@ -72,11 +72,16 @@ public abstract class Thing {
      *          | remove()
      * @effect  The terminated state will be set to true.
      *          | this.isTerminated = true
+     * @throws  FileNotWritableException
+     *          If the directory is not writable, this exception is thrown.
+     *          | !getDirectory().isWriteable()
      */
 
-    public void terminate(){
+    public void terminate() throws FileNotWritableException{
+        if(!getDirectory().isWriteable())
+            throw new FileNotWritableException(getDirectory());
         this.isTerminated = true;
-        remove();
+        remove(getDirectory());
         setDirectory(null);
     }
 
@@ -182,15 +187,18 @@ public abstract class Thing {
     }
 
     /**
-     * removes an item from a directory and sets it's own directory to null.
+     * removes an item from a directory and sets its own directory to null.
      * @post after the item is removed, the items directory is sorted again
+     * @throws FileNotWritableException
+     *        this is thrown if the current directory is not writable.
+     *        |!location.isWriteable()
      */
-    protected void remove(){
-        Directory currentdir = getDirectory();
-        if(currentdir != null){
-            currentdir.getContent().remove(this);
-            setDirectory(null);
-            currentdir.sortMap();
+    protected void remove(Directory dir) throws FileNotWritableException{
+        if(!dir.isWriteable())
+            throw new FileNotWritableException(dir);
+        if(dir != null){
+            dir.getContent().remove(this);
+            dir.sortMap();
         }
     }
     /**

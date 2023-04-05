@@ -147,6 +147,13 @@ public class Directory extends Thing {
     }
 
     /**
+     * @return if the file is writable.
+     */
+    public boolean isWriteable() {
+        return isWriteable;
+    }
+
+    /**
      * Makes the directory a rootDirectory
      *
      * @effect the directory is set to null
@@ -155,7 +162,7 @@ public class Directory extends Thing {
      *         |remove(directory).fromcontent
      */
     public void makeRoot(){
-        remove();
+        remove(getDirectory());
         setDirectory(null);
     }
 
@@ -196,19 +203,27 @@ public class Directory extends Thing {
      * @throws NameNotAvailableException
      *         this is thrown when there already exists a File,Map or Link with the given name
      *         |(!nameNotInMap(location))
+     * @throws FileNotWritableException
+     *         this is thrown if the location or current directory is not writable.
+     *         | !isWriteable() | !location.isWriteable()
      */
     @Raw
-    public void move(Directory location) throws LoopedDirectoryException,IllegalArgumentException,NameNotAvailableException{
+    public void move(Directory location) throws FileNotWritableException,LoopedDirectoryException,IllegalArgumentException,NameNotAvailableException{
+        if(!isWriteable)
+            throw new FileNotWritableException(this);
+        if(!location.isWriteable)
+            throw new FileNotWritableException(location);
         if(!noLoops(location))
             throw new LoopedDirectoryException(location);
         if(location ==null)
             throw new IllegalArgumentException();
         if(!nameNotInMap(location))
             throw new NameNotAvailableException();
-        remove();
+        Directory olddir = getDirectory();
         location.add(this);
         setDirectory(location);
         location.sortMap();
+        remove(olddir);
         location.setModificationTime();
 
     }
@@ -227,9 +242,9 @@ public class Directory extends Thing {
     @Raw
     @Model
     private boolean noLoops(Directory location){
-        Directory currentDirec = this.getDirectory();
+        Directory currentDirec = getDirectory();
         //Hier gaat ni niet in recursie
-        if(currentDirec != null)
+        if(currentDirec == null)
             return false;
         else{
             if(this == location){
@@ -276,7 +291,7 @@ public class Directory extends Thing {
      * @effect The getItemAt() function returns the item with the index.
      */
 
-    public Thing getItem(String searchName){
+    public Thing getItem(String searchName) throws IllegalArgumentException{
         int index = Collections.binarySearch(getContent(), new Directory( searchName), new Comparator<Thing>() {
                     @Override
                     public int compare(Thing item1, Thing item2) {
@@ -286,7 +301,7 @@ public class Directory extends Thing {
         if (index < 0){
             return null;
         }
-        return getItemAt(index - 1);
+        return getItemAt(index + 1);
     }
 
     /**
@@ -319,7 +334,10 @@ public class Directory extends Thing {
      * @return the index of the given item.
      */
 
-    public int getIndexOf(Thing item){
+    public int getIndexOf(Thing item) throws ArgumentNotFoundException{
+        if(! hasAsItem(item)){
+            throw new ArgumentNotFoundException();
+        }
         return getContent().indexOf(item) + 1;
     }
 

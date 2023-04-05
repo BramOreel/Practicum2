@@ -244,6 +244,7 @@ public class File extends Thing{
      */
     public void enlarge(int delta) throws FileNotWritableException {
         changeSize(delta);
+        setModificationTime();
     }
 
     /**
@@ -259,6 +260,7 @@ public class File extends Thing{
      */
     public void shorten(int delta) throws FileNotWritableException {
         changeSize(-delta);
+        setModificationTime();
     }
 
     /**
@@ -344,18 +346,25 @@ public class File extends Thing{
      * @throws NameNotAvailableException
      *         this is thrown when there already exists a File,Map or Link with the given name
      *         |(!nameNotInMap(location)
+     * @throws FileNotWritableException
+     *         this is throw if the location or current directory is not writable.
+     *         | !getDirectory().isWriteable() | !location.isWriteable()
      */
     @Raw
-    public void move(Directory location) throws IllegalArgumentException,NameNotAvailableException{
+    public void move(Directory location) throws FileNotWritableException,IllegalArgumentException,NameNotAvailableException{
+        if(!location.isWriteable())
+            throw new FileNotWritableException(location);
+        if(!getDirectory().isWriteable())
+            throw new FileNotWritableException(getDirectory());
         if(!isValidLocation(location))
             throw new IllegalArgumentException();
         if(!nameNotInMap(location))
             throw new NameNotAvailableException();
-
-        remove();
+        Directory olddir = getDirectory();
         setDirectory(location);
         location.add(this);
         location.sortMap();
+        remove(olddir);
         location.setModificationTime();
     }
 

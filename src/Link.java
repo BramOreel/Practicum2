@@ -5,21 +5,23 @@ import be.kuleuven.cs.som.annotate.Raw;
  *
  * @invar each link must have a valid name.
  *       |isValidName(name)
- * @invar a link must always reference a file or map. Once the link is made, it cannot be changed
- *       |setlink(directory || file)
+ * @invar a link must always reference a thing and it cannot reference another link. Once the link is made, it cannot be changed
+ *       |setlink(Thing),  (Thing != Link)
  * @invar a link must always be contained within a directory
  *       |link.getdirectory != null
  *
- * @author WoutThiers
+ * @author WoutThiers, Bram Oreel
  * @version 1.0
  */
 public class Link extends Thing{
 
     /**
-     * a variabele representing the s
+     * A variabele representing the state of the referenced item, if its terminated the state is false.
      */
     private boolean State = true;
-
+    /**
+     * A variable representing the item the link is referencing.
+     */
     private Thing reference = null;
 
 
@@ -68,10 +70,20 @@ public class Link extends Thing{
     }
 
     /**
-     *
+     * Creates a link.
      * @param dir
+     *        The directory where the link is placed.
      * @param name
+     *        The name of the link.
      * @param linkedItem
+     *        The item the link points to.
+     * @effect The link is initialized as a new Thing with the given
+     *         directory.
+     *         | super(dir)
+     * @effect The given name is set as the name of the link.
+     *         | setName(name)
+     * @effect The given reference is set as the reference of the link.
+     *         | setReference(name)
      */
     public Link(Directory dir, String name, Thing linkedItem){
         super(dir);
@@ -80,7 +92,8 @@ public class Link extends Thing{
     }
 
     /**
-     * moves the link to the designated location if the location is effective and the location is different from the current location. Otherwise nothing will happen
+     * Moves the link to the designated location if the location is effective and
+     * the location is different from the current location. Otherwise nothing will happen
      *
      * @param location
      *         the location of the directory
@@ -101,18 +114,26 @@ public class Link extends Thing{
      * @throws NameNotAvailableException
      *         this is thrown when there already exists a File,Map or Link with the given name
      *         |(!nameNotInMap(location)
+     * @throws FileNotWritableException
+     *         this is throw if the location or current directory is not writable.
+     *         | !getDirectory().isWriteable() | !location.isWriteable()
      */
     @Raw
-    public void move(Directory location) throws IllegalArgumentException,NameNotAvailableException{
+    public void move(Directory location) throws FileNotWritableException,IllegalArgumentException,NameNotAvailableException{
+        if(!getDirectory().isWriteable())
+            throw new FileNotWritableException(getDirectory());
+        if(!location.isWriteable())
+            throw new FileNotWritableException(location);
         if(!isValidLocation(location))
             throw new IllegalArgumentException();
         if(!nameNotInMap(location))
             throw new NameNotAvailableException();
 
-        remove();
+        Directory olddir = getDirectory();
         setDirectory(location);
         location.add(this);
         location.sortMap();
+        remove(olddir);
         location.setModificationTime();
     }
 
