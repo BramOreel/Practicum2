@@ -81,8 +81,8 @@ public class Directory extends Thing {
 
 
     /**
-     * Terminate the item.
-     * @post  The item will be removed from its directory.
+     * Terminates the item.
+     * @post  The item will be removed from its directory and the directory of the map will be set to null.
      *       | setDirectory(null)
      *       | remove()
      * @post  The terminated state will be set to true.
@@ -95,14 +95,12 @@ public class Directory extends Thing {
     @Override
     public void terminate() throws FileNotWritableException, DirectoryNotEmptyException{
         if(! isWriteable){
-            throw new FileNotWritableException();
+            throw new FileNotWritableException(this);
         }
         if(getNbItems() != 0){
-            throw new DirectoryNotEmptyException();
+            throw new DirectoryNotEmptyException(this);
         }
-        else{ this.isTerminated = true;
-            remove();
-            setDirectory(null);
+        else{ super.terminate();
     }}
 
     /**
@@ -188,6 +186,8 @@ public class Directory extends Thing {
      *         |newDir.add(this)
      * @effect after the thing is added, the map is sorted by name
      *         |sortMap();
+     * @effect the modification time of the location is changed to the current time
+     *        |setModificationTime();
      * @throws LoopedDirectoryException is thrown when a map already exists within the destination, thus creating a loop
      *         is also thrown when the new directory is the current directory
      *         |(!noLoops(location)
@@ -209,6 +209,7 @@ public class Directory extends Thing {
         location.add(this);
         setDirectory(location);
         location.sortMap();
+        location.setModificationTime();
 
     }
 

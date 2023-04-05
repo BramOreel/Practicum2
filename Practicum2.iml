@@ -36,5 +36,6 @@
     <orderEntry type="library" exported="" name="AnnotationsDoclets_v17" level="project" />
     <orderEntry type="library" exported="" name="junit.jupiter" level="project" />
     <orderEntry type="library" exported="" name="junit.platform.suite" level="project" />
+    <orderEntry type="library" name="AnnotationsDoclets_v171" level="project" />
   </component>
 </module>

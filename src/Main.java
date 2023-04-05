@@ -45,6 +45,7 @@ public class Main {
         System.out.println(mapa.isDirectOrIndirectChildOf(mapf));
         System.out.println(mapa.getTotalDiskUsage());
         System.out.println(biem.getAbsolutePath());
+        System.out.println(mapa.getCreationTime());
     }
 
 
