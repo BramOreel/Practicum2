@@ -4,8 +4,8 @@ public class Link extends Thing{
 
     private Thing reference;
 
-    public boolean getState() {
-        return getReference().state;
+    public boolean isTerminated() {
+        return getReference().isTerminated;
     }
 
     public Thing getReference() {
