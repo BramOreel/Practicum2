@@ -65,6 +65,8 @@ public abstract class Thing {
         setDirectory(null);
     }
 
+
+
     /**
      * Terminate the item.
      * @effect  The item will be removed from its directory.
@@ -178,6 +180,7 @@ public abstract class Thing {
         this.directory = mydirectory;
     }
 
+
     /**
      *
      * @return returns the current directory
@@ -218,8 +221,8 @@ public abstract class Thing {
     }
 
     /**
-     *returns the root Directory of a thing. Returns itself when the directory is a root Directory
-     * @return
+     * Returns the root Directory of a thing. Returns itself when the directory is a root Directory
+     * @return The root Directory
      */
     @Basic
     public Directory getRoot(){
@@ -241,9 +244,9 @@ public abstract class Thing {
     }
 
     /**
-     *
+     * Method to get a string of it's path.
      * @return returns the directory path  of a Link or Map, divided by forward slashes
-     *
+     *         | String path == "/" + nextDir.getName() "/" + getName();
      */
     public String getAbsolutePath(){
         String path = "/" + getName();
@@ -381,10 +384,28 @@ public abstract class Thing {
     public boolean hasOverlappingUsePeriod(Thing other) {
         if (other == null) return false;
         if(getModificationTime() == null || other.getModificationTime() == null) return false;
-        return ! (getCreationTime().before(other.getCreationTime()) &&
-                getModificationTime().before(other.getCreationTime()) ) &&
-                ! (other.getCreationTime().before(getCreationTime()) &&
-                        other.getModificationTime().before(getCreationTime()) );
+        return !( ( ! getCreationTime().after(other.getCreationTime()) &&
+                ! getModificationTime().after(other.getCreationTime()) ) ||
+                 (!other.getCreationTime().after(getCreationTime()) &&
+                        !other.getModificationTime().after(getCreationTime()) ));
+    }
+
+    /**
+     * Checks if a map is a child of another map
+     *
+     * @param map
+     *        the parent map we want to check it's children of
+     *
+     * @return returns true if the parent directory has this as one of it's children.
+     */
+    public boolean isDirectOrIndirectChildOf(Directory map){
+        if(this.getDirectory() == map)
+            return true;
+        else if (this.getDirectory() == null)
+            return false;
+
+        Directory nextDir = this.getDirectory();
+        return nextDir.isDirectOrIndirectChildOf(map);
     }
 
 
