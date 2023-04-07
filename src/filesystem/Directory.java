@@ -349,10 +349,11 @@ public class Directory extends Thing {
      */
 
     public Thing getItem(String searchName) throws IllegalArgumentException{
+        sortMap();
         int index = Collections.binarySearch(getContent(), new Directory( searchName), new Comparator<Thing>() {
                     @Override
                     public int compare(Thing item1, Thing item2) {
-                        return item1.getName().compareTo(item2.getName());
+                        return item1.getName().toLowerCase().compareTo(item2.getName().toLowerCase());
                 }});
         if (index < 0){
             return null;
@@ -369,6 +370,7 @@ public class Directory extends Thing {
      */
 
     public boolean containsDiskItemWithName(String searchName){
+        sortMap();
         int index = Collections.binarySearch(getContent(), new Directory( searchName), new Comparator<Thing>() {
             @Override
             public int compare(Thing item1, Thing item2) {
@@ -393,6 +395,7 @@ public class Directory extends Thing {
      */
 
     public int getIndexOf(Thing item) throws ArgumentNotFoundException {
+        sortMap();
         if(! hasAsItem(item)){
             throw new ArgumentNotFoundException();
         }
