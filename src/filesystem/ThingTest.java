@@ -1,7 +1,8 @@
+package filesystem;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,8 +32,6 @@ public class ThingTest {
         someFile3 = new File(someDirectory, "b", Type.JAVA);
         someFile4 = new File(someDirectory, "c", Type.JAVA);
     }
-
-
     @Test
     public void ConstructorTests() {
         // check if wrong name => default name
@@ -77,6 +76,7 @@ public class ThingTest {
                 });
         // check getters
         assertEquals(someFile.getDirectory(), someDirectory);
+        assertEquals(someFile.getName(),"someFile");
         assertEquals(someFile, someDirectory.getItem("someFile"));
         // check if moving items to a directory works and puts them in alphabetical order.
         someFile3.move(someDirectory2);

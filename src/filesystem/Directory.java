@@ -1,7 +1,8 @@
+package filesystem;
+
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Model;
 import be.kuleuven.cs.som.annotate.Raw;
-
 import java.util.*;
 import java.util.ArrayList;
 
@@ -9,13 +10,21 @@ import java.util.ArrayList;
 /**
  * A class for making a directory
  *
- * @author bramo
+ * @author Bram Oreel & Wout Thiers
  * @version 1.1
  *
  * @invar A directory must always have a valid name
  *        |isValidName(name)
  * @invar A directory cannot have itself as one of the items within content
  *        |noLoops(directory)
+ * @invar A directory cannot contain two items with the same name
+ *        , ignoring the difference between lower- and uppercase letters.
+ *        | for item1 and item2 in directory:
+ *        |      item1.getName().toLowerCase() != item2.getName().toLowerCase()
+ * @invar A directory is always sorted based on the name of the items,
+ *        , ignoring the difference between lower- and uppercase letters.
+ *        | sortMap()
+ *
  */
 
 public class Directory extends Thing {
@@ -35,12 +44,29 @@ public class Directory extends Thing {
      */
     private ArrayList<Thing> content = new ArrayList<Thing>();
     /**
-     * Variable stating the directory one level up of the Directory
+     * Variable stating the directory one level up of the filesystem.Directory
      */
     private Directory root = null;
 
 
-
+    /**
+     * Makes a new directory with a directory, a name and whether its writable.
+     * @param dir
+     *        the directory this is placed in.
+     * @param name
+     *        the name of the new directory.
+     * @param isWriteable
+     *        whether its writable.
+     * @effect A new Thing is made with the given directory.
+     *        |super(dir)
+     * @effect the given name is set as the name.
+     *        |setName(name)
+     * @effect the given writable is set as the writable.
+     *        |setWritable(isWritable)
+     * @effect the directory this is placed in gets sorted.
+     *        |getDirectory().sortMap()
+     */
+    @Raw
     public Directory(Directory dir, String name, boolean isWriteable){
         super(dir);
         setName(name);
@@ -48,16 +74,45 @@ public class Directory extends Thing {
         getDirectory().sortMap();
     }
 
+    /**
+     * Makes a new directory
+     * @param dir
+     *        the directory this belongs to.
+     * @param name
+     *        the name of the new directory.
+     * @effect A new directory is made with the writable set to true.
+     *        |this(dir,name,true);
+     */
+    @Raw
     public Directory(Directory dir, String name){
         this(dir,name,true);
     }
-
+    /**
+     * Makes a new root directory
+     * @param name
+     *        the name of the new directory.
+     * @effect A new Thing is made
+     *        |super()
+     * @effect the given name is set as the name.
+     *        |setName(name)
+     * @effect the given writable is set as the writable.
+     *        |setWritable(isWritable)
+     */
+    @Raw
     public Directory(String name, boolean isWriteable){
         super();
         setName(name);
         setWritable(isWriteable);
     }
 
+    /**
+     * Makes a new root directory
+     * @param name
+     *        the name of the new directory.
+     * @effect A new root directory is made with the writable set to true.
+     *        |this(name,true);
+     */
+    @Raw
     public Directory(String name){
         this(name,true);
     }
@@ -104,7 +159,7 @@ public class Directory extends Thing {
     }}
 
     /**
-     * changes the name of the Directory if writeable
+     * changes the name of the filesystem.Directory if writeable
      *
      * @param name The new name for this file.
      *
@@ -112,7 +167,7 @@ public class Directory extends Thing {
      *         |(!isWritable)
      */
     @Override
-    public void changeName(String name) throws FileNotWritableException{
+    public void changeName(String name) throws FileNotWritableException {
         if(!isWritable())
             throw new FileNotWritableException(this);
         super.changeName(name);
@@ -121,7 +176,7 @@ public class Directory extends Thing {
 
 
     /**
-     * adds a File, Map or Link to the directory's content if the thing isn't a null reference
+     * adds a filesystem.File, Map or filesystem.Link to the directory's content if the thing isn't a null reference
      * @param thing
      *        the thing to be added
      * @throws IllegalArgumentException is thrown when the thing to be added is a null reference.
@@ -130,7 +185,7 @@ public class Directory extends Thing {
      *         |(!isWritable)
      */
     @Model @Raw
-    protected void add(Thing thing) throws IllegalArgumentException,FileNotWritableException{
+    protected void add(@Raw Thing thing) throws IllegalArgumentException, FileNotWritableException {
         if(thing == null)
             throw new IllegalArgumentException();
         if(!isWritable())
@@ -139,9 +194,9 @@ public class Directory extends Thing {
     }
 
     /**
-     *
      * @return returns the content of the directory
      */
+    @Basic
     public ArrayList<Thing> getContent() {
         return content;
     }
@@ -149,6 +204,7 @@ public class Directory extends Thing {
     /**
      * @return if the file is writable.
      */
+    @Basic
     public boolean isWriteable() {
         return isWriteable;
     }
@@ -168,11 +224,9 @@ public class Directory extends Thing {
 
 
     /**
-     * Checks if a Directory contains an item one level down
-     *
+     * Checks if a filesystem.Directory contains an item one level down
      * @param thing
      *        the thing we are looking for
-     *
      * @return true or false
      */
     public boolean hasAsItem(Thing thing){
@@ -201,24 +255,24 @@ public class Directory extends Thing {
      * @throws IllegalArgumentException is thrown when the location the map must go to is not effective
      *         |(location == null)
      * @throws NameNotAvailableException
-     *         this is thrown when there already exists a File,Map or Link with the given name
+     *         this is thrown when there already exists a filesystem.File,Map or filesystem.Link with the given name
      *         |(!nameNotInMap(location))
      * @throws FileNotWritableException
      *         this is thrown if the location or current directory is not writable.
      *         | !isWriteable() | !location.isWriteable()
      */
     @Raw
-    public void move(Directory location) throws FileNotWritableException,LoopedDirectoryException,IllegalArgumentException,NameNotAvailableException{
+    public void move(@Raw Directory location) throws FileNotWritableException, LoopedDirectoryException,IllegalArgumentException, NameNotAvailableException {
         if(!isWriteable)
             throw new FileNotWritableException(this);
         if(!location.isWriteable)
             throw new FileNotWritableException(location);
+        if(location == null)
+            throw new IllegalArgumentException();
         if(!noLoops(location))
             throw new LoopedDirectoryException(location);
-        if(location ==null)
-            throw new IllegalArgumentException();
         if(!nameNotInMap(location))
-            throw new NameNotAvailableException();
+            throw new NameNotAvailableException(getName());
         Directory olddir = getDirectory();
         location.add(this);
         setDirectory(location);
@@ -232,7 +286,7 @@ public class Directory extends Thing {
      * Checks if a map is allowed to be added to another map
      * @param location
      *        the map we want to add our map to
-     * @pre the map to be added must be a root Directory
+     * @pre the map to be added must be a root filesystem.Directory
      *      |getDirectory(this) == null
      * @pre destination cannot already be a submap of the map we want to add
      *      |!(location.contains(this))
@@ -241,7 +295,7 @@ public class Directory extends Thing {
      */
     @Raw
     @Model
-    private boolean noLoops(Directory location){
+    private boolean noLoops(@Raw Directory location){
         Directory currentDirec = getDirectory();
         //Hier gaat ni niet in recursie
         if(currentDirec == null)
@@ -258,15 +312,18 @@ public class Directory extends Thing {
     }
     /**
      * Sorts the arraylist alphabetically based on the name of the items.
-     * @post  The arraylist is sorted alphabetically.
+     * @post  The arraylist is sorted alphabetically, ignoring the difference
+     *        between capital and non-capital letters.
+     *        | if (items.get(i).getName().toLowerCase().compareTo(items.get(j).getName()) > 0) {
+     *                         Collections.swap(items, i, j);
      */
-
+    @Model
     protected void sortMap(){
         ArrayList<Thing> items = getContent();
         if(items.size() > 0){
             for (int i = 0; i < items.size() - 1; i++) {
                 for (int j = i + 1; j < items.size(); j++) {
-                    if (items.get(i).getName().compareTo(items.get(j).getName()) > 0) {
+                    if (items.get(i).getName().toLowerCase().compareTo(items.get(j).getName()) > 0) {
                         Collections.swap(items, i, j);
     }}}}}
 
@@ -278,7 +335,7 @@ public class Directory extends Thing {
      * @return The item at the index.
      */
     public Thing getItemAt(int index){
-        return content.get(index-1);
+        return getContent().get(index-1);
     }
 
     /**
@@ -296,8 +353,7 @@ public class Directory extends Thing {
                     @Override
                     public int compare(Thing item1, Thing item2) {
                         return item1.getName().compareTo(item2.getName());
-                    }
-                });
+                }});
         if (index < 0){
             return null;
         }
@@ -328,13 +384,15 @@ public class Directory extends Thing {
     /**
      * Gives the index of the given item in the directory, the items are ordered starting
      * with index 1.
-     * @pre   The item must be inside the directory.
      * @param item
      *        the given item.
+     * @throws ArgumentNotFoundException
+     *         if the directory does not contain the given item.
+     *         | !hasAsItem(item)
      * @return the index of the given item.
      */
 
-    public int getIndexOf(Thing item) throws ArgumentNotFoundException{
+    public int getIndexOf(Thing item) throws ArgumentNotFoundException {
         if(! hasAsItem(item)){
             throw new ArgumentNotFoundException();
         }

@@ -1,3 +1,6 @@
+package filesystem;
+import be.kuleuven.cs.som.annotate.Basic;
+import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Raw;
 
 /**
@@ -6,14 +9,14 @@ import be.kuleuven.cs.som.annotate.Raw;
  * @invar each link must have a valid name.
  *       |isValidName(name)
  * @invar a link must always reference a thing and it cannot reference another link. Once the link is made, it cannot be changed
- *       |setlink(Thing),  (Thing != Link)
+ *       |setlink(filesystem.Thing),  (filesystem.Thing != filesystem.Link)
  * @invar a link must always be contained within a directory
  *       |link.getdirectory != null
  *
  * @author WoutThiers, Bram Oreel
  * @version 1.0
  */
-public class Link extends Thing{
+public class Link extends Thing {
 
     /**
      * A variabele representing the state of the referenced item, if its terminated the state is false.
@@ -24,7 +27,11 @@ public class Link extends Thing{
      */
     private Thing reference = null;
 
-
+    /**
+     * @return returns whether the object that it references is terminated.
+     *         True means it is not terminated and false when it is.
+     */
+    @Basic
     public boolean getState() {
         if(getReference().isTerminated)
             setState(false);
@@ -32,9 +39,10 @@ public class Link extends Thing{
     }
 
     /**
-     *
      * @return returns the object that the link references
      */
+    @Raw
+    @Immutable
     public Thing getReference() {
         return this.reference;
     }
@@ -77,7 +85,7 @@ public class Link extends Thing{
      *        The name of the link.
      * @param linkedItem
      *        The item the link points to.
-     * @effect The link is initialized as a new Thing with the given
+     * @effect The link is initialized as a new filesystem.Thing with the given
      *         directory.
      *         | super(dir)
      * @effect The given name is set as the name of the link.
@@ -85,6 +93,7 @@ public class Link extends Thing{
      * @effect The given reference is set as the reference of the link.
      *         | setReference(name)
      */
+    @Raw
     public Link(Directory dir, String name, Thing linkedItem){
         super(dir);
         setName(name);
@@ -112,14 +121,14 @@ public class Link extends Thing{
      *         this is thrown when the location is the current location or the location does not exist
      *         |!isValidLocation(location)
      * @throws NameNotAvailableException
-     *         this is thrown when there already exists a File,Map or Link with the given name
+     *         this is thrown when there already exists a filesystem.File,Map or filesystem.Link with the given name
      *         |(!nameNotInMap(location)
      * @throws FileNotWritableException
      *         this is throw if the location or current directory is not writable.
      *         | !getDirectory().isWriteable() | !location.isWriteable()
      */
     @Raw
-    public void move(Directory location) throws FileNotWritableException,IllegalArgumentException,NameNotAvailableException{
+    public void move(Directory location) throws FileNotWritableException,IllegalArgumentException, NameNotAvailableException {
         if(!getDirectory().isWriteable())
             throw new FileNotWritableException(getDirectory());
         if(!location.isWriteable())
@@ -127,7 +136,7 @@ public class Link extends Thing{
         if(!isValidLocation(location))
             throw new IllegalArgumentException();
         if(!nameNotInMap(location))
-            throw new NameNotAvailableException();
+            throw new NameNotAvailableException(getName());
 
         Directory olddir = getDirectory();
         setDirectory(location);

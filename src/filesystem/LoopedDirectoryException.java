@@ -1,11 +1,13 @@
+package filesystem;
+
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 
 /**
- * A class for signaling illegal attempts to change a file.
+ * A class for signaling illegal attempts to change the directory of a directory
+ * that would create a loop.
  *
- * @author 	Tommy Messelis
- * @version	2.2
+ * @author 	Wout Thiers & Bram Oreel
  */
 public class LoopedDirectoryException extends RuntimeException {
 

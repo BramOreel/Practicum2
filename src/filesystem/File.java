@@ -1,11 +1,9 @@
+package filesystem;
+
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Model;
 import be.kuleuven.cs.som.annotate.Raw;
-
-
-
-
 
 
 /**
@@ -24,12 +22,12 @@ import be.kuleuven.cs.som.annotate.Raw;
  *
  * @author  Mark Dreesen
  * @author  Tommy Messelis
- * @author bramo
+ * @author Bram Oreel & Wout Thiers
  * @version 4.0
  *
  * @note		See Coding Rule 48 for more info on the encapsulation of class invariants.
  */
-public class File extends Thing{
+public class File extends Thing {
 
     /**********************************************************
      * Constructors
@@ -89,7 +87,7 @@ public class File extends Thing{
      *         | this(name,0,true,type)
      */
     @Raw
-    public File(Directory dir,String name, Type type) {
+    public File(Directory dir, String name, Type type) {
         this(dir,name,0,true, type);
     }
 
@@ -120,7 +118,7 @@ public class File extends Thing{
      *        if the file is not writable, this exception will be thrown.
      */
     @Override
-    public void terminate() throws FileNotWritableException, DirectoryNotEmptyException{
+    public void terminate() throws FileNotWritableException, DirectoryNotEmptyException {
         if(! isWritable){
             throw new FileNotWritableException(this);
         }
@@ -280,7 +278,7 @@ public class File extends Thing{
      *         | ! isWritable()
      */
     @Model
-    private void changeSize(int delta) throws FileNotWritableException{
+    private void changeSize(int delta) throws FileNotWritableException {
         if (isWritable()) {
             setSize(getSize()+delta);
             setModificationTime();
@@ -332,9 +330,9 @@ public class File extends Thing{
      *         the location of the directory
      * @effect the directory is changed to the listed directory
      *         |setDirectory(this)
-     * @effect the File is removed from the contents of the old directory
+     * @effect the filesystem.File is removed from the contents of the old directory
      *         |this.remove();
-     * @effect the File is added to the list of content of the designated location
+     * @effect the filesystem.File is added to the list of content of the designated location
      *         |location.add(this)
      * @effect after the thing is added, the map is sorted by name
      *        |sortMap();
@@ -344,14 +342,14 @@ public class File extends Thing{
      *         this is thrown when the location is the current location or the location does not exist
      *         |!isValidLocation(location)
      * @throws NameNotAvailableException
-     *         this is thrown when there already exists a File,Map or Link with the given name
+     *         this is thrown when there already exists a filesystem.File,Map or filesystem.Link with the given name
      *         |(!nameNotInMap(location)
      * @throws FileNotWritableException
      *         this is throw if the location or current directory is not writable.
      *         | !getDirectory().isWriteable() | !location.isWriteable()
      */
     @Raw
-    public void move(Directory location) throws FileNotWritableException,IllegalArgumentException,NameNotAvailableException{
+    public void move(Directory location) throws FileNotWritableException,IllegalArgumentException, NameNotAvailableException {
         if(!location.isWriteable())
             throw new FileNotWritableException(location);
         if(!getDirectory().isWriteable())
@@ -359,7 +357,7 @@ public class File extends Thing{
         if(!isValidLocation(location))
             throw new IllegalArgumentException();
         if(!nameNotInMap(location))
-            throw new NameNotAvailableException();
+            throw new NameNotAvailableException(getName());
         Directory olddir = getDirectory();
         setDirectory(location);
         location.add(this);

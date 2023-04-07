@@ -1,3 +1,4 @@
+package filesystem;
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 import be.kuleuven.cs.som.annotate.Model;
@@ -9,9 +10,7 @@ import java.util.Date;
  *  @invar	Each class or subclass must have a properly spelled name.
  * 			| isValidName(getName())
  *
- *
- * @author bramo
- *
+ * @author Bram Oreel & Wout Thiers
  */
 public abstract class Thing {
 
@@ -32,7 +31,7 @@ public abstract class Thing {
     /**
      * CONSTRUCTORS
      *
-     * Initialise a new thing with given Directory
+     * Initialise a new thing with given filesystem.Directory
      *
      * @param mydirectory
      *        a parameter describing the address of the directory one level higher then the thing
@@ -47,22 +46,27 @@ public abstract class Thing {
      *         item already exists within the given directory.
      *         |if mydirectory.contains.this throw error.
      */
+    @Raw
     public Thing(Directory mydirectory) throws DirAlreadyContainsThingException{
-        if(mydirectory.getContent().contains(this))
-            throw new DirAlreadyContainsThingException();
-        setDirectory(mydirectory);
-        mydirectory.add(this);
+        if(mydirectory == null)
+            setDirectory(mydirectory);
+        else {
+            if(mydirectory.getContent().contains(this))
+                throw new DirAlreadyContainsThingException();
+            setDirectory(mydirectory);
+            mydirectory.add(this);
+        }
+
     }
 
     /**
-     * Initialise a new root Directory
+     * Initialise a new root Thing.
      *
      * @effect the directory will be set to 'null'
-     *         |Thing(null)
+     *         |this(null)
      */
-
     public Thing(){
-        setDirectory(null);
+        this(null);
     }
 
 
@@ -74,7 +78,7 @@ public abstract class Thing {
      *          | remove()
      * @effect  The terminated state will be set to true.
      *          | this.isTerminated = true
-     * @throws  FileNotWritableException
+     * @throws FileNotWritableException
      *          If the directory is not writable, this exception is thrown.
      *          | !getDirectory().isWriteable()
      */
@@ -109,7 +113,8 @@ public abstract class Thing {
      * 			| result ==
      * 			|	(name != null) && name.matches("[a-zA-Z_0-9.-]+")
      */
-    public boolean isValidName(String name) {
+    @Model
+    protected boolean isValidName(String name) {
         return (name != null && name.matches("[a-zA-Z_0-9.-]+"));
     }
 
@@ -141,7 +146,7 @@ public abstract class Thing {
      * @return   A valid file name.
      *         | isValidName(result)
      */
-    @Model
+    @Model @Immutable
     private static String getDefaultName() {
         return "new_file";
     }
@@ -171,11 +176,11 @@ public abstract class Thing {
 
     /**
      *  Sets the directory of the thing to the giving directory
-     *
      * @param mydirectory
      *        a parameter stating the directory in which we want to place the thing
-     *
      */
+    @Raw
+    @Model
     protected void setDirectory(Directory mydirectory) {
         this.directory = mydirectory;
     }
@@ -185,6 +190,7 @@ public abstract class Thing {
      *
      * @return returns the current directory
      */
+    @Basic
     public Directory getDirectory(){
         return this.directory;
     }
@@ -196,6 +202,7 @@ public abstract class Thing {
      *        this is thrown if the current directory is not writable.
      *        |!location.isWriteable()
      */
+    @Model
     protected void remove(Directory dir) throws FileNotWritableException{
         if(!dir.isWriteable())
             throw new FileNotWritableException(dir);
@@ -205,24 +212,26 @@ public abstract class Thing {
         }
     }
     /**
-     * Checks if the name of a map already contains a File, Link or Map with the same name
+     * Checks if the name of a map already contains a filesystem.File, filesystem.Link or Map with the same name
      * @param location
      *        the map that is investigated
-     * @return returns true if the name is still available
+     * @return returns true if the name is still available.
+     *         returns false if there already is an item with that name
+     *         , ignoring the difference between lower- and uppercase letters.
      */
     @Model
     protected boolean nameNotInMap(Directory location){
         for(int i =0; i<location.getContent().size(); i++){
             Thing item = location.getContent().get(i);
-            if(item.getName() == getName())
+            if(item.getName().toLowerCase() == getName().toLowerCase())
                 return false;
         }
         return true;
     }
 
     /**
-     * Returns the root Directory of a thing. Returns itself when the directory is a root Directory
-     * @return The root Directory
+     * Returns the root filesystem.Directory of a thing. Returns itself when the directory is a root filesystem.Directory
+     * @return The root filesystem.Directory
      */
     @Basic
     public Directory getRoot(){
@@ -235,17 +244,17 @@ public abstract class Thing {
     }
 
     /**
-     *
      * @return returns the name a files root directory
      *         |getRoot().getName();
      */
+    @Basic
     public String getRootName(){
         return getRoot().getName();
     }
 
     /**
      * Method to get a string of it's path.
-     * @return returns the directory path  of a Link or Map, divided by forward slashes
+     * @return returns the directory path  of a filesystem.Link or Map, divided by forward slashes
      *         | String path == "/" + nextDir.getName() "/" + getName();
      */
     public String getAbsolutePath(){
@@ -265,6 +274,7 @@ public abstract class Thing {
      *        the location to send the file to
      * @return returns true if valid location
      */
+    @Model
     protected boolean isValidLocation(Directory location){
         return((location != this.getDirectory()) && (location != null));
     }
@@ -281,7 +291,7 @@ public abstract class Thing {
     /**
      * Return the time at which this file was created.
      */
-    @Raw @Basic @Immutable
+    @Basic @Immutable
     public Date getCreationTime() {
         return creationTime;
     }
@@ -297,6 +307,8 @@ public abstract class Thing {
      *         	| 	(date != null) &&
      *         	| 	(date.getTime() <= System.currentTimeMillis())
      */
+    @Model
+    @Raw
     public static boolean isValidCreationTime(Date date) {
         return 	(date!=null) &&
                 (date.getTime()<=System.currentTimeMillis());
@@ -335,7 +347,8 @@ public abstract class Thing {
      *         |   (date.getTime() <= System.currentTimeMillis())     )
      */
     @Raw
-    public boolean canHaveAsModificationTime(Date date) {
+    @Model
+    protected boolean canHaveAsModificationTime(Date date) {
         return (date == null) ||
                 ( (date.getTime() >= getCreationTime().getTime()) &&
                         (date.getTime() <= System.currentTimeMillis()) );
@@ -381,6 +394,7 @@ public abstract class Thing {
      *        	| ! (other.getCreationTime().before(getCreationTime()) &&
      *        	|	 other.getModificationTime().before(getCreationTime()) )
      */
+    @Raw
     public boolean hasOverlappingUsePeriod(Thing other) {
         if (other == null) return false;
         if(getModificationTime() == null || other.getModificationTime() == null) return false;
@@ -407,10 +421,4 @@ public abstract class Thing {
         Directory nextDir = this.getDirectory();
         return nextDir.isDirectOrIndirectChildOf(map);
     }
-
-
-
-
-
-
 }

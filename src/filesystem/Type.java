@@ -1,9 +1,10 @@
-import be.kuleuven.cs.som.annotate.Model;
+package filesystem;
 
+import be.kuleuven.cs.som.annotate.Model;
 /**
  * A enumeration of possible file types
  *
- * @author bramo
+ * @author Bram Oreel & Wout Thiers
  * @version 1.0
  */
 public enum Type {

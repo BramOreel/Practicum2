@@ -1,3 +1,9 @@
+package filesystem;
+
+/**
+ * this was just for some simple tests in the beginning.
+ *
+ */
 public class Main {
     public static void main(String[] args) {
         System.out.println("Hello world!");

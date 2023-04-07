@@ -1,6 +1,12 @@
+package filesystem;
+
 import be.kuleuven.cs.som.annotate.Basic;
 import be.kuleuven.cs.som.annotate.Immutable;
 
+/**
+ * Exception that is trown when the directory is not empty when it has to be empty
+ * @author Wout Thiers & Bram Oreel
+ */
 public class DirectoryNotEmptyException extends RuntimeException{
 
     /**
